@@ -3,13 +3,16 @@ import java.util.*;
 public class Graph {
     private final GraphNode[] vertices;  // Adjacency list for graph.
     private final String name;  //The file from which the graph was created.
+    private GraphNode[][] residual;
 
     public Graph(String name, int vertexCount) {
         this.name = name;
-
         vertices = new GraphNode[vertexCount];
+        residual = new GraphNode[vertexCount][2]; // declares 2d residual
         for (int vertex = 0; vertex < vertexCount; vertex++) {
             vertices[vertex] = new GraphNode(vertex);
+            residual[vertex][0] = new GraphNode(vertex); // fill with vertexes
+            residual[vertex][1] = new GraphNode(vertex);
         }
     }
 
@@ -20,7 +23,11 @@ public class Graph {
 
         // This adds the actual requested edge, along with its capacity
         vertices[source].addEdge(source, destination, capacity);
+        // This adds the backward flow
+        vertices[destination].addEdge(destination, source, 0); // how do we know how much is actually being sent? Is this just for initialization, or for any reference
 
+        residual[source][0].addEdge(source, destination, capacity); // how much space is left forward?
+        residual[source][1].addEdge(destination, source, capacity); // how much was put in going forward? should it be at index source, or destination?
         return true;
     }
 
