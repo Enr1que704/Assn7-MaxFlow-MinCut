@@ -14,6 +14,7 @@ public class Graph {
             residual[vertex][0] = new GraphNode(vertex); // fill with vertexes
             residual[vertex][1] = new GraphNode(vertex);
         }
+
     }
 
     public boolean addEdge(int source, int destination, int capacity) {
@@ -44,28 +45,22 @@ public class Graph {
      */
     private boolean hasAugmentingPath(int s, int t) { // should we use vertices or residual?
         Queue<Integer> q = new LinkedList<>();
-        for (int i = 0; i < vertices.length; i++) {        // reset parents of all nodes
+        for (int i = 0; i < vertices.length; i++) {
             vertices[i].parent = -1;
         }
-        q.add(s);                                          // add s to the queue
-        while (!q.isEmpty() && vertices[t].parent == -1) { // while queue isn't empty and vertex t doesn't have a parent
-            int v = q.remove();                            // remove from queue as vertex v
-//            for (var edge : vertices[v].successor) {       // for all successors from v
-            for (int edge = 0; edge < vertices[v].successor.size(); edge++) {
-                int w = vertices[v].successor.get(edge).to;                           // for the edge, call the other vertex w
-                if (vertices[v].successor.get(edge).capacity > 0 && !vertices[v].visited) {
-                    vertices[v].visited = true;
-                    vertices[w].parent = v;
-                    q.add(w);
-                    System.out.println(v);
+        vertices[s].visited = true;
+        q.add(s);
+        while (!q.isEmpty() && vertices[t].parent < 0) {
+            int v = q.poll();
+            for (int edge = 0; edge < vertices[v].successor.size(); edge++) { // for each sucessor
+                var w = vertices[v].successor.get(edge).to;
+                if (!vertices[edge].visited && RESIDUALCAPACITY) {
+                    q.add(edge);
+                    vertices[edge].parent = w;
+                    vertices[edge].visited = true;
                 }
             }
 
-        }
-        System.out.println(t);
-        if (vertices[t].parent != -1) {
-            return true;
-        }
 
 
         return false;
