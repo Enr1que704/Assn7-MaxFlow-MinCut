@@ -35,36 +35,40 @@ public class Graph {
      * Algorithm to find max-flow in a network
      */
     public int findMaxFlow(int s, int t, boolean report) {
-        // TODO:
+        hasAugmentingPath(s, t);
         return 0;
     }
 
     /**
      * Algorithm to find an augmenting path in a network
      */
-    private boolean hasAugmentingPath(int s, int t) {
-//        Queue<Integer> q = new LinkedList<>();
-//        for (int i = 0; i < vertices.length; i++) {        // reset parents of all nodes
-//            vertices[i].parent = -1;
-//        }
-//        q.add(s);                                          // add s to the queue
-//        while (!q.isEmpty() && vertices[t].parent == -1) { // while queue isn't empty and vertex t doesn't have a parent
-//            int v = q.remove();                            // remove from queue as vertex v
+    private boolean hasAugmentingPath(int s, int t) { // should we use vertices or residual?
+        Queue<Integer> q = new LinkedList<>();
+        for (int i = 0; i < vertices.length; i++) {        // reset parents of all nodes
+            vertices[i].parent = -1;
+        }
+        q.add(s);                                          // add s to the queue
+        while (!q.isEmpty() && vertices[t].parent == -1) { // while queue isn't empty and vertex t doesn't have a parent
+            int v = q.remove();                            // remove from queue as vertex v
 //            for (var edge : vertices[v].successor) {       // for all successors from v
-//                int w = edge.to;                           // for the edge, call the other vertex w
-//                if (vertices[v].successor.get(w).capacity > 0 && !vertices[v].visited && vertices[v].successor.get(w).from != s) {
-//                    vertices[v].visited = true;
-//                    vertices[w].parent = v;
-//                    q.add(w);
-//                }
-//            }
-//        }
-//        if (vertices[t].parent != -1) {
-//            return true;
-//        }
-//
-//
-//        return false;
+            for (int edge = 0; edge < vertices[v].successor.size(); edge++) {
+                int w = vertices[v].successor.get(edge).to;                           // for the edge, call the other vertex w
+                if (vertices[v].successor.get(edge).capacity > 0 && !vertices[v].visited) {
+                    vertices[v].visited = true;
+                    vertices[w].parent = v;
+                    q.add(w);
+                    System.out.println(v);
+                }
+            }
+
+        }
+        System.out.println(t);
+        if (vertices[t].parent != -1) {
+            return true;
+        }
+
+
+        return false;
     }
 
     /**
