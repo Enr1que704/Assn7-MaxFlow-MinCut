@@ -28,7 +28,7 @@ public class Graph {
         vertices[destination].addEdge(destination, source, 0); // how do we know how much is actually being sent? Is this just for initialization, or for any reference
 
         residual[source][0].addEdge(source, destination, capacity); // how much space is left forward?
-        residual[source][1].addEdge(destination, source, capacity); // how much was put in going forward? should it be at index source, or destination?
+        residual[source][1].addEdge(destination, source, 0); // how much was put in going forward? should it be at index source, or destination?
         return true;
     }
 
@@ -48,21 +48,22 @@ public class Graph {
         for (int i = 0; i < vertices.length; i++) {
             vertices[i].parent = -1;
         }
-        vertices[s].visited = true;
         q.add(s);
-        while (!q.isEmpty() && vertices[t].parent <0) {
+        while (!q.isEmpty() && vertices[t].parent < 0) {
             int v = q.poll();
-            for (int edge = 0; edge < vertices[v].successor.size(); edge++) { // for each sucessor
+            for (int edge = 0; edge < residual[v][0].successor.size(); edge++) { // for each sucessor
                 var w = vertices[v].successor.get(edge).to;
-                int capacity = residual[v][1].successor.get(edge).capacity;
-                if (vertices[w].visited == false && capacity >= 0) { // this might be wrong
-                    q.add(w);
+                int capacity = residual[v][0].successor.get(edge).capacity;
+                var r = residual;
+                if (vertices[v].visited == false && capacity > 0 && w != s) { // this might be wrong
                     vertices[w].parent = v;
-                    vertices[w].visited = true;
-                    System.out.println(w);
+                    q.add(w);
+//                    vertices[v].visited = true;
+                    System.out.println(v);
                 }
 
             }
+            vertices[v].visited = true;
 
         }
         return false;
