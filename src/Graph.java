@@ -54,15 +54,15 @@ public class Graph {
             int v = q.poll();
             for (int edge = 0; edge < vertices[v].successor.size(); edge++) { // for each sucessor
                 var w = vertices[v].successor.get(edge).to;
-                if (!vertices[edge].visited && RESIDUALCAPACITY) {
+                if (!vertices[w].visited && vertices[v].successor.get(w).from != s && CAPACITY) { // this might be wrong
                     q.add(edge);
                     vertices[edge].parent = w;
                     vertices[edge].visited = true;
+                    System.out.println(w);
                 }
             }
 
-
-
+        }
         return false;
     }
 
