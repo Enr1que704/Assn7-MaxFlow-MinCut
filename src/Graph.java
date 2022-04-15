@@ -50,16 +50,18 @@ public class Graph {
         }
         vertices[s].visited = true;
         q.add(s);
-        while (!q.isEmpty() && vertices[t].parent < 0) {
+        while (!q.isEmpty() && vertices[t].parent <0) {
             int v = q.poll();
             for (int edge = 0; edge < vertices[v].successor.size(); edge++) { // for each sucessor
                 var w = vertices[v].successor.get(edge).to;
-                if (!vertices[w].visited && vertices[v].successor.get(w).from != s && CAPACITY) { // this might be wrong
-                    q.add(edge);
-                    vertices[edge].parent = w;
-                    vertices[edge].visited = true;
+                int capacity = residual[v][1].successor.get(edge).capacity;
+                if (vertices[w].visited == false && capacity >= 0) { // this might be wrong
+                    q.add(w);
+                    vertices[w].parent = v;
+                    vertices[w].visited = true;
                     System.out.println(w);
                 }
+
             }
 
         }
