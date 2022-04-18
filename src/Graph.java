@@ -62,7 +62,6 @@ public class Graph {
             for (int edge = 0; edge < residual[v].successor.size(); edge++) {
                 var w = vertices[v].successor.get(edge).to;
                 int capacity = residual[v].successor.get(edge).capacity;
-                var r = residual;
                 if (capacity > 0 && vertices[v] != vertices[w] && vertices[w].parent == -1) {
                     vertices[w].parent = v;
                     q.add(w);
@@ -71,7 +70,6 @@ public class Graph {
             if (vertices[t].parent != -1) {
                 return true;
             }
-
         }
         return false;
     }
