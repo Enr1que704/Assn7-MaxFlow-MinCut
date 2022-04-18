@@ -3,16 +3,16 @@ import java.util.*;
 public class Graph {
     private final GraphNode[] vertices;  // Adjacency list for graph.
     private final String name;  //The file from which the graph was created.
-    private GraphNode[][] residual;
+    private GraphNode[] residual;
 
     public Graph(String name, int vertexCount) {
         this.name = name;
         vertices = new GraphNode[vertexCount];
-        residual = new GraphNode[vertexCount][2]; // declares 2d residual
+        residual = new GraphNode[vertexCount]; // declares 2d residual
         for (int vertex = 0; vertex < vertexCount; vertex++) {
             vertices[vertex] = new GraphNode(vertex);
-            residual[vertex][0] = new GraphNode(vertex); // fill with vertexes
-            residual[vertex][1] = new GraphNode(vertex);
+            residual[vertex] = new GraphNode(vertex); // fill with vertexes
+
         }
 
     }
@@ -25,10 +25,10 @@ public class Graph {
         // This adds the actual requested edge, along with its capacity
         vertices[source].addEdge(source, destination, capacity);
         // This adds the backward flow
-        vertices[destination].addEdge(destination, source, 0); // how do we know how much is actually being sent? Is this just for initialization, or for any reference
+        vertices[destination].addEdge(destination, source, 0);
 
-        residual[source][0].addEdge(source, destination, capacity); // how much space is left forward?
-        residual[source][1].addEdge(destination, source, 0); // how much was put in going forward? should it be at index source, or destination?
+        residual[source].addEdge(source, destination, capacity);
+        residual[destination].addEdge(destination, source, 0);
         return true;
     }
 
@@ -36,14 +36,22 @@ public class Graph {
      * Algorithm to find max-flow in a network
      */
     public int findMaxFlow(int s, int t, boolean report) {
-        hasAugmentingPath(s, t);
+        if (hasAugmentingPath(s ,t)) {
+            GraphNode current = vertices[t];
+            System.out.println("flow number");
+            while (current != vertices[s]) {
+                System.out.print(current.id + " ");
+                current = vertices[current.parent];
+            }
+            System.out.println(current.id);
+        }
         return 0;
     }
 
     /**
      * Algorithm to find an augmenting path in a network
      */
-    private boolean hasAugmentingPath(int s, int t) { // should we use vertices or residual?
+    private boolean hasAugmentingPath(int s, int t) {
         Queue<Integer> q = new LinkedList<>();
         for (int i = 0; i < vertices.length; i++) {
             vertices[i].parent = -1;
@@ -51,19 +59,18 @@ public class Graph {
         q.add(s);
         while (!q.isEmpty() && vertices[t].parent < 0) {
             int v = q.poll();
-            for (int edge = 0; edge < residual[v][0].successor.size(); edge++) { // for each sucessor
+            for (int edge = 0; edge < residual[v].successor.size(); edge++) {
                 var w = vertices[v].successor.get(edge).to;
-                int capacity = residual[v][0].successor.get(edge).capacity;
+                int capacity = residual[v].successor.get(edge).capacity;
                 var r = residual;
-                if (vertices[v].visited == false && capacity > 0 && w != s) { // this might be wrong
+                if (capacity > 0 && vertices[v] != vertices[w] && vertices[w].parent == -1) {
                     vertices[w].parent = v;
                     q.add(w);
-//                    vertices[v].visited = true;
-                    System.out.println(v);
                 }
-
             }
-            vertices[v].visited = true;
+            if (vertices[t].parent != -1) {
+                return true;
+            }
 
         }
         return false;
