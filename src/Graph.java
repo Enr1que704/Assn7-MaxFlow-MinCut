@@ -36,15 +36,35 @@ public class Graph {
      * Algorithm to find max-flow in a network
      */
     public int findMaxFlow(int s, int t, boolean report) {
-        if (hasAugmentingPath(s ,t)) {
-            GraphNode current = vertices[t];
-            System.out.println("flow number");
-            while (current != vertices[s]) {
-                System.out.print(current.id + " ");
-                current = vertices[current.parent];
+//        if (hasAugmentingPath(s ,t)) {
+//            GraphNode current = vertices[t];
+//            System.out.println("flow number");
+//            while (current != vertices[s]) {
+//                System.out.print(current.id + " ");
+//                current = vertices[current.parent];
+//            }
+//            System.out.println(current.id);
+//        }
+        int totalFlow = 0;
+
+        while (hasAugmentingPath(s, t)) {
+            int availableFlow = 30;
+            GraphNode v = vertices[t];
+            while (v.parent != -1) {
+                GraphNode prevNode = v;
+                v = vertices[v.parent];
+                for (int i = 0; i < v.successor.size(); i++) { // for each of the edges
+                    if (v.successor.get(i).to == prevNode.id) { // if the successor of the current edge is equal to where we just were
+                        if (v.successor.get(i).capacity < availableFlow) { // if the edge capacity is smaller than current available flow
+                            availableFlow = v.successor.get(i).capacity; // TODO: Figure out how to check residual capacity as well
+                        }
+                    }
+                } /* END OF FOR LOOP */
+                
+
             }
-            System.out.println(current.id);
         }
+
         return 0;
     }
 
