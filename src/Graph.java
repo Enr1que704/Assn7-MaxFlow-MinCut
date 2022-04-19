@@ -60,11 +60,19 @@ public class Graph {
                         }
                     }
                 } /* END OF FOR LOOP */
-                
-
             }
+            v = vertices[t];
+            while (v.parent != -1) {
+                GraphNode prevNode = v;
+                v = vertices[v.parent];
+                for (int i = 0; i < v.successor.size(); i++) { // for each of the edges
+                    if (v.successor.get(i).to == prevNode.id) {
+                        // TODO: Update residual graph - subtract available flow from s -> t, add from t -> s
+                    }
+                }
+            }
+            totalFlow += availableFlow;
         }
-
         return 0;
     }
 
