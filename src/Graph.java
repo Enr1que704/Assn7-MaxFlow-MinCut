@@ -49,31 +49,40 @@ public class Graph {
 
         while (hasAugmentingPath(s, t)) {
             int availableFlow = 30;
-            GraphNode v = vertices[t];
+            GraphNode v = residual[t];
             while (v.parent != -1) {
                 GraphNode prevNode = v;
-                v = vertices[v.parent];
+                v = residual[v.parent];
                 for (int i = 0; i < v.successor.size(); i++) { // for each of the edges
                     if (v.successor.get(i).to == prevNode.id) { // if the successor of the current edge is equal to where we just were
                         if (v.successor.get(i).capacity < availableFlow) { // if the edge capacity is smaller than current available flow
-                            availableFlow = v.successor.get(i).capacity; // TODO: Figure out how to check residual capacity as well
+                            availableFlow = v.successor.get(i).capacity;
                         }
                     }
                 } /* END OF FOR LOOP */
             }
-            v = vertices[t];
+//            System.out.println(availableFlow);
+//            break;
+
+            v = residual[t];
             while (v.parent != -1) {
                 GraphNode prevNode = v;
-                v = vertices[v.parent];
+                v = residual[v.parent];
                 for (int i = 0; i < v.successor.size(); i++) { // for each of the edges
                     if (v.successor.get(i).to == prevNode.id) {
-                        // TODO: Update residual graph - subtract available flow from s -> t, add from t -> s
+                        v.successor.get(i).capacity -= availableFlow;
+                    }
+                }
+                for (int i = 0; i < prevNode.successor.size(); i++) {
+                    if (prevNode.successor.get(i).to == v.id) {
+                        prevNode.successor.get(i).capacity += availableFlow;
                     }
                 }
             }
             totalFlow += availableFlow;
+//            var r = residual;
         }
-        return 0;
+        return totalFlow;
     }
 
     /**
@@ -81,21 +90,21 @@ public class Graph {
      */
     private boolean hasAugmentingPath(int s, int t) {
         Queue<Integer> q = new LinkedList<>();
-        for (int i = 0; i < vertices.length; i++) {
-            vertices[i].parent = -1;
+        for (int i = 0; i < residual.length; i++) {
+            residual[i].parent = -1;
         }
         q.add(s);
-        while (!q.isEmpty() && vertices[t].parent < 0) {
+        while (!q.isEmpty() && residual[t].parent < 0) {
             int v = q.poll();
             for (int edge = 0; edge < residual[v].successor.size(); edge++) {
-                var w = vertices[v].successor.get(edge).to;
+                var w = residual[v].successor.get(edge).to;
                 int capacity = residual[v].successor.get(edge).capacity;
-                if (capacity > 0 && vertices[v] != vertices[w] && vertices[w].parent == -1) {
-                    vertices[w].parent = v;
+                if (capacity > 0 && residual[v] != residual[w] && residual[w].parent == -1) {
+                    residual[w].parent = v;
                     q.add(w);
                 }
             }
-            if (vertices[t].parent != -1) {
+            if (residual[t].parent != -1) {
                 return true;
             }
         }
