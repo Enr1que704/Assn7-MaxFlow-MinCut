@@ -36,19 +36,9 @@ public class Graph {
      * Algorithm to find max-flow in a network
      */
     public int findMaxFlow(int s, int t, boolean report) {
-//        if (hasAugmentingPath(s ,t)) {
-//            GraphNode current = vertices[t];
-//            System.out.println("flow number");
-//            while (current != vertices[s]) {
-//                System.out.print(current.id + " ");
-//                current = vertices[current.parent];
-//            }
-//            System.out.println(current.id);
-//        }
         int totalFlow = 0;
-
         while (hasAugmentingPath(s, t)) {
-            int availableFlow = 30;
+            int availableFlow = 100000;
             GraphNode v = residual[t];
             while (v.parent != -1) {
                 GraphNode prevNode = v;
@@ -57,30 +47,12 @@ public class Graph {
                     if (v.successor.get(i).to == prevNode.id) { // if the successor of the current edge is equal to where we just were
                         if (v.successor.get(i).capacity < availableFlow) { // if the edge capacity is smaller than current available flow
                             availableFlow = v.successor.get(i).capacity;
+                            System.out.println(availableFlow);//
                         }
                     }
                 } /* END OF FOR LOOP */
             }
-//            System.out.println(availableFlow);
-//            break;
-
-            v = residual[t];
-            while (v.parent != -1) {
-                GraphNode prevNode = v;
-                v = residual[v.parent];
-                for (int i = 0; i < v.successor.size(); i++) { // for each of the edges
-                    if (v.successor.get(i).to == prevNode.id) {
-                        v.successor.get(i).capacity -= availableFlow;
-                    }
-                }
-                for (int i = 0; i < prevNode.successor.size(); i++) {
-                    if (prevNode.successor.get(i).to == v.id) {
-                        prevNode.successor.get(i).capacity += availableFlow;
-                    }
-                }
-            }
-            totalFlow += availableFlow;
-//            var r = residual;
+            break;
         }
         return totalFlow;
     }
