@@ -35,7 +35,7 @@ public class Graph {
     /**
      * Algorithm to find max-flow in a network
      */
-    public int findMaxFlow(int s, int t, boolean report) {
+    public int findMaxFlow(int s, int t, boolean report) { // parent is from, v is to
         int totalFlow = 0;
         while (hasAugmentingPath(s, t)) {
             int availableFlow = 100000;
@@ -47,13 +47,28 @@ public class Graph {
                     if (v.successor.get(i).to == prevNode.id) { // if the successor of the current edge is equal to where we just were
                         if (v.successor.get(i).capacity < availableFlow) { // if the edge capacity is smaller than current available flow
                             availableFlow = v.successor.get(i).capacity;
-                            System.out.println(availableFlow);//
                         }
                     }
                 } /* END OF FOR LOOP */
             }
-            break;
+            v = residual[t];
+            while (v.parent != -1) {
+                GraphNode prevNode = v;
+                v = residual[v.parent];
+                for (int i = 0; i < v.successor.size(); i++) {
+                    if (v.successor.get(i).to == prevNode.id) {
+                        v.successor.get(i).capacity -= availableFlow;
+                    }
+                }
+                for (int i = 0; i < prevNode.successor.size(); i++) { // THIS IS WRONG
+                    if (prevNode.successor.get(i).to == v.id) {
+                        prevNode.successor.get(i).capacity += availableFlow;
+                    }
+                }
+            }
+            totalFlow += availableFlow;
         }
+
         return totalFlow;
     }
 
@@ -71,7 +86,7 @@ public class Graph {
             for (int edge = 0; edge < residual[v].successor.size(); edge++) {
                 var w = residual[v].successor.get(edge).to;
                 int capacity = residual[v].successor.get(edge).capacity;
-                if (capacity > 0 && residual[v] != residual[w] && residual[w].parent == -1) {
+                if (capacity > 0 && residual[w].parent == -1 && w != s) { // logic error
                     residual[w].parent = v;
                     q.add(w);
                 }
