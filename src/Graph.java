@@ -86,13 +86,15 @@ public class Graph {
         }
         System.out.println();
         /* Print the edges */
-        for (int i = 0; i < residual.length; i++) {
-            for (int j = 0; j < residual[i].successor.size(); j++) {
-                int vertCapacity = vertices[i].successor.get(j).capacity;
-                int residCapacity = residual[i].successor.get(j).capacity;
-                /* For each of the capacities that aren't 0 and have been changed */
-                if (vertCapacity > 0 && vertCapacity != residCapacity) {
-                    System.out.println("Edge(" + residual[i].id + ", " + residual[i].successor.get(j).to + ") transports " + (vertCapacity - residCapacity) + " items");
+        if (report) {
+            for (int i = 0; i < residual.length; i++) {
+                for (int j = 0; j < residual[i].successor.size(); j++) {
+                    int vertCapacity = vertices[i].successor.get(j).capacity;
+                    int residCapacity = residual[i].successor.get(j).capacity;
+                    /* For each of the capacities that aren't 0 and have been changed */
+                    if (vertCapacity > 0 && vertCapacity != residCapacity) {
+                        System.out.println("Edge(" + residual[i].id + ", " + residual[i].successor.get(j).to + ") transports " + (vertCapacity - residCapacity) + " items");
+                    }
                 }
             }
         }
@@ -129,7 +131,36 @@ public class Graph {
      * Algorithm to find the min-cut edges in a network
      */
     public void findMinCut(int s) {
-        // TODO: WRITE THIS METHOD LIKE A CODING CHAD
+        ArrayList<Integer> R = new ArrayList<>();
+        Queue<Integer> Q = new LinkedList<>();
+        Q.add(s);
+        R.add(s);
+        while (!Q.isEmpty()) {
+            int v = Q.poll();
+            for (int i = 0; i < residual[v].successor.size(); i++) {
+                int nextVertex = residual[v].successor.get(i).to;
+                if (residual[v].successor.get(i).capacity > 0 /*&& residual[v].id < nextVertex*/ && residual[nextVertex].visited == false) {
+                    Q.add(nextVertex);
+                    R.add(nextVertex);
+                    residual[nextVertex].visited = true;
+                }
+            }
+        }
+        System.out.println();
+        System.out.println("-- Min Cut: " + name + " --");
+//        for (int i = 0; i < R.size(); i++) {
+//            System.out.println(R.get(i));
+//        }
+        for (int i = 0; i < R.size(); i++) {
+            int v = R.get(i);
+            for (int j = 0; j < residual[v].successor.size(); j++) {
+                int nextNode = residual[v].successor.get(j).to;
+                if (!R.contains(nextNode)) {
+                    System.out.println("Min Cut Edge: (" + v + ", " + residual[v].successor.get(j).to + ")");
+                }
+            }
+
+        }
 
     }
 
